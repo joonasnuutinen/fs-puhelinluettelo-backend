@@ -1,6 +1,7 @@
 const express = require('express')
 
 const app = express()
+app.use(express.json())
 
 let persons = [
   { 
@@ -51,6 +52,22 @@ app.delete('/api/persons/:id', (req, res) => {
   const id = Number(req.params.id)
   persons = persons.filter(p => p.id !== id)
   res.status(204).end()
+})
+
+const generateId = () => {
+  // Source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random/#Getting_a_random_integer_between_two_values
+  const min = 10
+  const max = 1000000
+  return Math.floor(Math.random() * (max - min) + min)
+}
+
+app.post('/api/persons', (req, res) => {
+  const body = req.body
+  const newPerson = { ...body }
+  newPerson.id = generateId()
+  persons = persons.concat(newPerson)
+
+  res.json(newPerson)
 })
 
 const port = 3001
