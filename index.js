@@ -49,12 +49,6 @@ app.delete('/api/persons/:id', (req, res, next) => {
     }).catch(err => next(err))
 })
 
-const error = msg => {
-  return {
-    error: msg
-  }
-}
-
 app.put('/api/persons/:id', (req, res, next) => {
   const { name, number } = req.body
   const person = { name, number }
