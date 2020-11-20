@@ -1,8 +1,10 @@
 const express = require('express')
 const morgan = require('morgan')
+const cors = require('cors')
 
 const app = express()
 app.use(express.json())
+app.use(cors())
 
 // Configure and use morgan for logging requests
 morgan.token('body', (req, res) => JSON.stringify(req.body))
