@@ -64,13 +64,6 @@ app.delete('/api/persons/:id', (req, res) => {
   res.status(204).end()
 })
 
-const generateId = () => {
-  // Source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random/#Getting_a_random_integer_between_two_values
-  const min = 10
-  const max = 1000000
-  return Math.floor(Math.random() * (max - min) + min)
-}
-
 const error = msg => {
   return {
     error: msg
@@ -87,19 +80,15 @@ app.post('/api/persons', (req, res) => {
   if (!body.number) {
     return res.status(400).json(error('Missing number'))
   }
-
-  if (persons.find(p => p.name === body.name)) {
-    return res.status(400).json(error('Name must be unique'))
-  }
-
-  const newPerson = {
-    id: generateId(),
+  
+  const person = new Person({
     name: body.name,
     number: body.number
-  }
-  persons = persons.concat(newPerson)
-
-  res.json(newPerson)
+  })
+  
+  person.save().then(savedPerson => {
+    res.json(savedPerson)
+  })
 })
 
 const port = process.env.PORT
