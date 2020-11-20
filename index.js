@@ -15,35 +15,14 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :b
 // Serve static content
 app.use(express.static('build'))
 
-let persons = [
-  { 
-    "id": 1,
-    "name": "Arto Hellas", 
-    "number": "040-123456",
-  },
-  { 
-    "id": 2,
-    "name": "Ada Lovelace", 
-    "number": "39-44-5323523",
-  },
-  { 
-    "id": 3,
-    "name": "Dan Abramov", 
-    "number": "12-43-234345",
-  },
-  { 
-    "id": 4,
-    "name": "Mary Poppendieck", 
-    "number": "39-23-6423122",
-  }
-]
-
 app.get('/info', (req, res) => {
-  const content = `
-    <p>Phonebook has info for ${persons.length} people</p>
-    <p>${Date()}</p>
-  `
-  res.send(content)
+  Person.count({}).then(num => {
+    const content = `
+      <p>Phonebook has info for ${num} people</p>
+      <p>${Date()}</p>
+    `
+    res.send(content)
+  })
 })
 
 app.get('/api/persons', (req, res) => {
@@ -75,6 +54,16 @@ const error = msg => {
     error: msg
   }
 }
+
+app.put('/api/persons/:id', (req, res, next) => {
+  const { name, number } = req.body
+  const person = { name, number }
+  
+  Person.findByIdAndUpdate(req.params.id, person, { new: true })
+    .then(updatedPerson => {
+      res.json(updatedPerson)
+    }).catch(err => next(err))
+})
 
 app.post('/api/persons', (req, res) => {
   const body = req.body
