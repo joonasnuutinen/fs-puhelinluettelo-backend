@@ -9,7 +9,7 @@ app.use(express.json())
 app.use(cors())
 
 // Configure and use morgan for logging requests
-morgan.token('body', (req, res) => JSON.stringify(req.body))
+morgan.token('body', (req) => JSON.stringify(req.body))
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
 // Serve static content
@@ -44,7 +44,7 @@ app.get('/api/persons/:id', (req, res, next) => {
 
 app.delete('/api/persons/:id', (req, res, next) => {
   Person.findByIdAndRemove(req.params.id)
-    .then(result => {
+    .then(() => {
       res.status(204).end()
     }).catch(err => next(err))
 })
@@ -52,7 +52,7 @@ app.delete('/api/persons/:id', (req, res, next) => {
 app.put('/api/persons/:id', (req, res, next) => {
   const { name, number } = req.body
   const person = { name, number }
-  
+
   Person.findByIdAndUpdate(req.params.id, person, { new: true })
     .then(updatedPerson => {
       res.json(updatedPerson)
@@ -66,7 +66,7 @@ app.post('/api/persons', (req, res, next) => {
     name: body.name,
     number: body.number
   })
-  
+
   person.save().then(savedPerson => {
     res.json(savedPerson)
   }).catch(err => next(err))
